@@ -1,0 +1,654 @@
+[
+  {
+    "updatedAt": "2026-02-02T16:38:25.131Z",
+    "createdAt": "2026-01-31T02:07:45.774Z",
+    "id": "GtyF4O9Y0xhjugOk7-adN",
+    "name": "Recepção",
+    "description": null,
+    "active": true,
+    "isArchived": false,
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "omnichannel",
+          "options": {}
+        },
+        "name": "Webhook Entrada",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1,
+        "position": [
+          -464,
+          544
+        ],
+        "id": "61ed699a-afc6-4c1a-9d6e-f40e602f258e",
+        "webhookId": "da194e4d-3f8a-416f-9d56-dfbb3332a5f2"
+      },
+      {
+        "parameters": {
+          "respondWith": "text",
+          "responseBody": "={{ $json.query['hub.challenge'] }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          -176,
+          256
+        ],
+        "id": "61f32bb4-9320-4045-bc22-c7b2159b0ba5",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "content": "## Webhook\nesse é o webhook que irá receber todas as notificações quando chegar mensagens nos canais (whatsapp, facebook messenger e instagram) \n",
+          "height": 272,
+          "width": 336,
+          "color": 6
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -608,
+          416
+        ],
+        "typeVersion": 1,
+        "id": "df21aa2f-531b-43b4-a930-3cfd22f8915d",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "content": "## OBS\nDeixei esse nó aqui pois ele é usado quando vamos cadastrar o webhook no meta developer. isso esta na documentação no [meta developer](https://developers.facebook.com/)",
+          "height": 352,
+          "width": 272
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -256,
+          64
+        ],
+        "typeVersion": 1,
+        "id": "e38648c4-1d3c-4147-8400-7e57d3859b98",
+        "name": "Sticky Note2"
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 3
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.channel }}",
+                      "rightValue": "instagram",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "id": "97a49e1c-e129-4780-9e6d-5d69d10a2fdd"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "instagram"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 3
+                  },
+                  "conditions": [
+                    {
+                      "id": "9d549a7d-3600-474f-a916-0e0781673d8e",
+                      "leftValue": "={{ $json.channel }}",
+                      "rightValue": "page",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "facebook mesenger"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 3
+                  },
+                  "conditions": [
+                    {
+                      "id": "31279089-e4b4-43cb-8885-c1eaf79d34d7",
+                      "leftValue": "={{ $json.channel }}",
+                      "rightValue": "whatsapp",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "whatsapp"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.4,
+        "position": [
+          16,
+          528
+        ],
+        "id": "c266dd10-52f9-4a60-bf60-08294234c740",
+        "name": "Switch2"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "51a7a5b2-5c0d-4302-8348-d3354ef70439",
+                "name": "channel",
+                "value": "={{ $json.body.object }}",
+                "type": "string"
+              },
+              {
+                "id": "e507b8be-d7fc-4821-91db-d61da82a3d2e",
+                "name": "sender.id",
+                "value": "={{ $json.body.entry[0].messaging[0].sender.id }}",
+                "type": "string"
+              },
+              {
+                "id": "3d9ac0bc-1bc3-4e11-9ffb-695c72b976ba",
+                "name": "message.text",
+                "value": "={{ $json.body.entry[0].messaging[0].message.text }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -208,
+          544
+        ],
+        "id": "be89dc85-dbdb-411f-947e-c78f2ed86d00",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "uA1QaQajGHgqGqnh",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/uA1QaQajGHgqGqnh",
+            "cachedResultName": "Instagram + Salesforce"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "position": [
+          384,
+          512
+        ],
+        "id": "67997de7-b257-455a-842c-87bde90ceb54",
+        "name": "Call 'Instagram + Salesforce'"
+      }
+    ],
+    "connections": {
+      "Webhook Entrada": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Switch2": {
+        "main": [
+          [
+            {
+              "node": "Call 'Instagram + Salesforce'",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Switch2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1",
+      "availableInMCP": false
+    },
+    "staticData": null,
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "pinData": {
+      "Webhook Entrada": [
+        {
+          "json": {
+            "headers": {
+              "host": "n8n-service-9kj8.onrender.com",
+              "user-agent": "facebookexternalua",
+              "content-length": "393",
+              "accept": "*/*",
+              "accept-encoding": "gzip, br",
+              "cdn-loop": "cloudflare; loops=1",
+              "cf-connecting-ip": "173.252.83.112",
+              "cf-ipcountry": "US",
+              "cf-ray": "9bde81efddc544bc-DFW",
+              "cf-visitor": "{\"scheme\":\"https\"}",
+              "content-type": "application/json",
+              "instagram-api-version": "v24.0",
+              "render-proxy-ttl": "4",
+              "rndr-id": "413cec15-c500-45ef",
+              "true-client-ip": "173.252.83.112",
+              "x-forwarded-for": "173.252.83.112, 162.159.104.7, 10.18.92.175",
+              "x-forwarded-proto": "https",
+              "x-hub-signature": "sha1=3c3530a5a465a17a6af6014cebfceaa772387474",
+              "x-hub-signature-256": "sha256=a6f8ab4bde42aafe67fd0db8b0ad0494ff9a5698d68529046bc0fe897973dbd0",
+              "x-request-start": "1768408117898509"
+            },
+            "params": {},
+            "query": {},
+            "body": {
+              "object": "instagram",
+              "entry": [
+                {
+                  "time": 1768408117558,
+                  "id": "17841451224855274",
+                  "messaging": [
+                    {
+                      "sender": {
+                        "id": "6997264400365531"
+                      },
+                      "recipient": {
+                        "id": "17841451224855274"
+                      },
+                      "timestamp": 1768408117260,
+                      "message": {
+                        "mid": "aWdfZAG1faXRlbToxOklHTWVzc2FnZAUlEOjE3ODQxNDUxMjI0ODU1Mjc0OjM0MDI4MjM2Njg0MTcxMDMwMTI0NDI1OTQ4MDI1NDA2MTI5Nzk0ODozMjYyMTM3MTk1Njk3NjgyMDQzNzAyOTUwMjUxMzU3Nzk4NAZDZD",
+                        "text": "OI"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "webhookUrl": "https://n8n-service-9kj8.onrender.com/webhook/webhook",
+            "executionMode": "production"
+          }
+        }
+      ]
+    },
+    "versionId": "674880a3-a88b-4064-9a20-dc9ebf8e4c30",
+    "activeVersionId": "1b767c94-4d02-43b4-b394-2ccdc4f2e1a4",
+    "versionCounter": 50,
+    "triggerCount": 1,
+    "shared": [
+      {
+        "updatedAt": "2026-01-31T02:07:45.776Z",
+        "createdAt": "2026-01-31T02:07:45.776Z",
+        "role": "workflow:owner",
+        "workflowId": "GtyF4O9Y0xhjugOk7-adN",
+        "projectId": "VCOZCujOBOB72ngP",
+        "project": {
+          "updatedAt": "2026-01-30T16:38:37.039Z",
+          "createdAt": "2026-01-30T16:36:00.695Z",
+          "id": "VCOZCujOBOB72ngP",
+          "name": "Andre Santos <kronstor10@gmail.com>",
+          "type": "personal",
+          "icon": null,
+          "description": null,
+          "creatorId": "4e322802-0dbb-4561-96dc-cd99856363e7",
+          "projectRelations": [
+            {
+              "updatedAt": "2026-01-30T16:36:00.695Z",
+              "createdAt": "2026-01-30T16:36:00.695Z",
+              "userId": "4e322802-0dbb-4561-96dc-cd99856363e7",
+              "projectId": "VCOZCujOBOB72ngP",
+              "user": {
+                "updatedAt": "2026-02-01T23:00:02.000Z",
+                "createdAt": "2026-01-30T16:36:00.396Z",
+                "id": "4e322802-0dbb-4561-96dc-cd99856363e7",
+                "email": "kronstor10@gmail.com",
+                "firstName": "Andre",
+                "lastName": "Santos",
+                "personalizationAnswers": {
+                  "version": "v4",
+                  "personalization_survey_submitted_at": "2026-01-30T16:38:43.813Z",
+                  "personalization_survey_n8n_version": "2.4.8"
+                },
+                "settings": {
+                  "userActivated": true,
+                  "firstSuccessfulWorkflowId": "A1YRG7GqFs7uSJ8aoVTpN",
+                  "userActivatedAt": 1769796979686,
+                  "easyAIWorkflowOnboarded": true
+                },
+                "disabled": false,
+                "mfaEnabled": false,
+                "lastActiveAt": "2026-02-01",
+                "isPending": false
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "tags": [],
+    "activeVersion": {
+      "updatedAt": "2026-01-31T18:39:30.000Z",
+      "createdAt": "2026-01-31T18:39:29.483Z",
+      "versionId": "1b767c94-4d02-43b4-b394-2ccdc4f2e1a4",
+      "workflowId": "GtyF4O9Y0xhjugOk7-adN",
+      "nodes": [
+        {
+          "parameters": {
+            "httpMethod": "POST",
+            "path": "omnichannel",
+            "options": {}
+          },
+          "name": "Webhook Entrada",
+          "type": "n8n-nodes-base.webhook",
+          "typeVersion": 1,
+          "position": [
+            -464,
+            544
+          ],
+          "id": "61ed699a-afc6-4c1a-9d6e-f40e602f258e",
+          "webhookId": "da194e4d-3f8a-416f-9d56-dfbb3332a5f2"
+        },
+        {
+          "parameters": {
+            "respondWith": "text",
+            "responseBody": "={{ $json.query['hub.challenge'] }}",
+            "options": {}
+          },
+          "type": "n8n-nodes-base.respondToWebhook",
+          "typeVersion": 1.5,
+          "position": [
+            -176,
+            256
+          ],
+          "id": "61f32bb4-9320-4045-bc22-c7b2159b0ba5",
+          "name": "Respond to Webhook"
+        },
+        {
+          "parameters": {
+            "content": "## Webhook\nesse é o webhook que irá receber todas as notificações quando chegar mensagens nos canais (whatsapp, facebook messenger e instagram) \n",
+            "height": 272,
+            "width": 336,
+            "color": 6
+          },
+          "type": "n8n-nodes-base.stickyNote",
+          "position": [
+            -608,
+            416
+          ],
+          "typeVersion": 1,
+          "id": "df21aa2f-531b-43b4-a930-3cfd22f8915d",
+          "name": "Sticky Note"
+        },
+        {
+          "parameters": {
+            "content": "## OBS\nDeixei esse nó aqui pois ele é usado quando vamos cadastrar o webhook no meta developer. isso esta na documentação no [meta developer](https://developers.facebook.com/)",
+            "height": 352,
+            "width": 272
+          },
+          "type": "n8n-nodes-base.stickyNote",
+          "position": [
+            -256,
+            64
+          ],
+          "typeVersion": 1,
+          "id": "e38648c4-1d3c-4147-8400-7e57d3859b98",
+          "name": "Sticky Note2"
+        },
+        {
+          "parameters": {
+            "rules": {
+              "values": [
+                {
+                  "conditions": {
+                    "options": {
+                      "caseSensitive": true,
+                      "leftValue": "",
+                      "typeValidation": "strict",
+                      "version": 3
+                    },
+                    "conditions": [
+                      {
+                        "leftValue": "={{ $json.channel }}",
+                        "rightValue": "instagram",
+                        "operator": {
+                          "type": "string",
+                          "operation": "equals"
+                        },
+                        "id": "97a49e1c-e129-4780-9e6d-5d69d10a2fdd"
+                      }
+                    ],
+                    "combinator": "and"
+                  },
+                  "renameOutput": true,
+                  "outputKey": "instagram"
+                },
+                {
+                  "conditions": {
+                    "options": {
+                      "caseSensitive": true,
+                      "leftValue": "",
+                      "typeValidation": "strict",
+                      "version": 3
+                    },
+                    "conditions": [
+                      {
+                        "id": "9d549a7d-3600-474f-a916-0e0781673d8e",
+                        "leftValue": "={{ $json.channel }}",
+                        "rightValue": "page",
+                        "operator": {
+                          "type": "string",
+                          "operation": "equals"
+                        }
+                      }
+                    ],
+                    "combinator": "and"
+                  },
+                  "renameOutput": true,
+                  "outputKey": "facebook mesenger"
+                },
+                {
+                  "conditions": {
+                    "options": {
+                      "caseSensitive": true,
+                      "leftValue": "",
+                      "typeValidation": "strict",
+                      "version": 3
+                    },
+                    "conditions": [
+                      {
+                        "id": "31279089-e4b4-43cb-8885-c1eaf79d34d7",
+                        "leftValue": "={{ $json.channel }}",
+                        "rightValue": "whatsapp",
+                        "operator": {
+                          "type": "string",
+                          "operation": "equals"
+                        }
+                      }
+                    ],
+                    "combinator": "and"
+                  },
+                  "renameOutput": true,
+                  "outputKey": "whatsapp"
+                }
+              ]
+            },
+            "options": {}
+          },
+          "type": "n8n-nodes-base.switch",
+          "typeVersion": 3.4,
+          "position": [
+            16,
+            528
+          ],
+          "id": "c266dd10-52f9-4a60-bf60-08294234c740",
+          "name": "Switch2"
+        },
+        {
+          "parameters": {
+            "assignments": {
+              "assignments": [
+                {
+                  "id": "51a7a5b2-5c0d-4302-8348-d3354ef70439",
+                  "name": "channel",
+                  "value": "={{ $json.body.object }}",
+                  "type": "string"
+                },
+                {
+                  "id": "e507b8be-d7fc-4821-91db-d61da82a3d2e",
+                  "name": "sender.id",
+                  "value": "={{ $json.body.entry[0].messaging[0].sender.id }}",
+                  "type": "string"
+                },
+                {
+                  "id": "3d9ac0bc-1bc3-4e11-9ffb-695c72b976ba",
+                  "name": "message.text",
+                  "value": "={{ $json.body.entry[0].messaging[0].message.text }}",
+                  "type": "string"
+                }
+              ]
+            },
+            "options": {}
+          },
+          "type": "n8n-nodes-base.set",
+          "typeVersion": 3.4,
+          "position": [
+            -208,
+            544
+          ],
+          "id": "be89dc85-dbdb-411f-947e-c78f2ed86d00",
+          "name": "Edit Fields"
+        },
+        {
+          "parameters": {
+            "workflowId": {
+              "__rl": true,
+              "value": "uA1QaQajGHgqGqnh",
+              "mode": "list",
+              "cachedResultUrl": "/workflow/uA1QaQajGHgqGqnh",
+              "cachedResultName": "Instagram + Salesforce"
+            },
+            "workflowInputs": {
+              "mappingMode": "defineBelow",
+              "value": {},
+              "matchingColumns": [],
+              "schema": [],
+              "attemptToConvertTypes": false,
+              "convertFieldsToString": true
+            },
+            "options": {}
+          },
+          "type": "n8n-nodes-base.executeWorkflow",
+          "typeVersion": 1.3,
+          "position": [
+            384,
+            512
+          ],
+          "id": "67997de7-b257-455a-842c-87bde90ceb54",
+          "name": "Call 'Instagram + Salesforce'"
+        }
+      ],
+      "connections": {
+        "Webhook Entrada": {
+          "main": [
+            [
+              {
+                "node": "Edit Fields",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Switch2": {
+          "main": [
+            [
+              {
+                "node": "Call 'Instagram + Salesforce'",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Edit Fields": {
+          "main": [
+            [
+              {
+                "node": "Switch2",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      },
+      "authors": "Andre Santos",
+      "name": "Version 1b767c94",
+      "description": "",
+      "autosaved": false,
+      "workflowPublishHistory": [
+        {
+          "createdAt": "2026-01-31T18:39:30.982Z",
+          "id": 47,
+          "workflowId": "GtyF4O9Y0xhjugOk7-adN",
+          "versionId": "1b767c94-4d02-43b4-b394-2ccdc4f2e1a4",
+          "event": "activated",
+          "userId": "4e322802-0dbb-4561-96dc-cd99856363e7"
+        }
+      ]
+    }
+  }
+]
