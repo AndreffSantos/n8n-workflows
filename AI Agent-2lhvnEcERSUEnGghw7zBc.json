@@ -1,0 +1,487 @@
+[
+  {
+    "updatedAt": "2026-02-02T02:14:53.859Z",
+    "createdAt": "2026-01-31T14:31:10.774Z",
+    "id": "2lhvnEcERSUEnGghw7zBc",
+    "name": "AI Agent",
+    "description": null,
+    "active": true,
+    "isArchived": false,
+    "nodes": [
+      {
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "id": "51fa4f39-711c-4a72-bd0f-0403220d2814",
+        "typeVersion": 1.1,
+        "name": "When Executed by Another Workflow",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "position": [
+          0,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "gpt-4.1-mini",
+            "mode": "list",
+            "cachedResultName": "gpt-4.1-mini"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          192,
+          208
+        ],
+        "id": "51967502-05af-45b9-ae56-1cfe5c40b96a",
+        "name": "4.1-mini",
+        "credentials": {
+          "openAiApi": {
+            "id": "9rwbTuCPrjOsdMzG",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://graph.instagram.com/v24.0/17841451224855274/messages",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer IGAAQbVC020WRBZAFpJTXdSb2VOa1JFQVJRYTdPdG4wNUxDc0dNNWJJM0phWkpsT3Fzam0wdFdGMTBYV0FLM3pxaXQtaTNrRE05Snk0WjFPdVAxeGl4QzYwYmtvb2hMNVdTZA1hRcnNrbWp3ZA3FEX2JkVXlHZAXQ1Q2JxUlk2Y2xYQQZDZD"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "recipient.id",
+                "value": "={{ $('When Executed by Another Workflow').item.json.sender.id }}"
+              },
+              {
+                "name": "message.text",
+                "value": "={{ $json.output }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          592,
+          0
+        ],
+        "id": "5f9e8ee7-ab7b-49f7-8fbd-b85d9753762b",
+        "name": "Resposta Instagram"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ $json.message.text }}",
+          "options": {
+            "systemMessage": "=## IDENTIDADE\n-   Você é **Larissa**, secretária da FLOPS  **Consultoria e TI**.\n-   Fale sempre como uma pessoa real — nada de dizer que é assistente virtual ou inteligência artificial.\n-   A forma de se comunicar deve ser **natural, humana e próxima**, como se estivesse conversando com o paciente no WhatsApp da clínica.\n\n## SUA FUNÇÃO\n-   Você atende os pacientes **instagram**, podendo receber apenas **mensagens de texto**.\n-   Seu papel é **acolher o paciente com empatia, criar conexão verdadeira e conduzir a conversa de forma leve e natural até o agendamento da avaliação**.\n\n## TOM DE VOZ\n-   Fale como uma pessoa **real**, com naturalidade e empatia genuína.\n-   Transmita **atenção e interesse** em ajudar o paciente a entender o melhor caminho para o cuidado que ele busca.\n-   Use uma **linguagem simples e mais informal**, mas sempre correta gramaticalmente.\n    -   Evite termos muito formais como “prezado”, “gentileza” ou “por favor”. Prefira formas mais naturais como:\n        -   “pode me mandar”\n        -   “me conta melhor”\n        -   “te explico certinho”\n        -   “vamos ver o que fica melhor pra você”    \n-   **Nunca repita o nome do paciente durante a conversa.** Após coletar o nome, trate a pessoa de forma próxima e acolhedora, mas sem repetir o nome.\n-   Sempre responda com mensagens curtas com no máximo 40 palavras.\n-    Use frases curtas e objetivas.\n-   **Demonstre empatia real** — sempre mostre que você entendeu o que a pessoa disse antes de responder.\n\n## FLUXO DE ATENDIMENTO\n**Etapa 1 — Apresentação e acolhimento**\n-   Inicie se apresentando como Larissa, secretária da FLOPS Data Solutions e peça o nome da pessoa.\n\n**Etapa 2 — Interesse do paciente**\n-   Pergunte de forma acolhedora e empática **quais as dúvidas do cliente**.\n\n- Se o cliente já tiver dito, pule direto para o **fluxo de procedimento e serviços**.\n\n## TOOLS DISPONÍVEIS\n\n### Create a lead in Salesforce\n- use esse tool para criar a lead do cliente.\n\n## DATA E HORA ATUALIZADOS\n\nPara efeito de contexto durante as suas conversas segue a data e hora de hoje e os próximos dias:  \n{{ $now }}"
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.8,
+        "position": [
+          224,
+          0
+        ],
+        "id": "e14db635-32b7-4174-a8c3-c77b64f748ef",
+        "name": "Larissa"
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $('When Executed by Another Workflow').item.json.sender.id }}",
+          "contextWindowLength": "=5"
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3,
+        "position": [
+          320,
+          208
+        ],
+        "id": "595270a8-760e-4726-8486-6222304cf726",
+        "name": "Simple Memory"
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "Use esse tool uando o cliente informar o nome, entaõ cire um lead para ele",
+          "company": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Company', ``, 'string') }}",
+          "lastname": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Last_Name', ``, 'string') }}",
+          "additionalFields": {}
+        },
+        "type": "n8n-nodes-base.salesforceTool",
+        "typeVersion": 1,
+        "position": [
+          432,
+          208
+        ],
+        "id": "8746a142-c079-46e2-8902-b9138b34940b",
+        "name": "Create a lead in Salesforce",
+        "credentials": {
+          "salesforceOAuth2Api": {
+            "id": "v6waAG1gy6GBaPan",
+            "name": "Salesforce account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Larissa",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "4.1-mini": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Larissa",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Larissa": {
+        "main": [
+          [
+            {
+              "node": "Resposta Instagram",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Simple Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "Larissa",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create a lead in Salesforce": {
+        "ai_tool": [
+          [
+            {
+              "node": "Larissa",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1",
+      "availableInMCP": false
+    },
+    "staticData": null,
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "pinData": {
+      "When Executed by Another Workflow": [
+        {
+          "json": {
+            "channel": "instagram",
+            "sender": {
+              "id": "6997264400365531"
+            },
+            "message": {
+              "text": "Oi"
+            }
+          }
+        }
+      ]
+    },
+    "versionId": "240ce2ae-f401-414b-aa42-8c9a487d030d",
+    "activeVersionId": "dd02bd3c-f981-4a3c-9c98-1355a99a6dd3",
+    "versionCounter": 59,
+    "triggerCount": 0,
+    "shared": [
+      {
+        "updatedAt": "2026-01-31T14:31:10.778Z",
+        "createdAt": "2026-01-31T14:31:10.778Z",
+        "role": "workflow:owner",
+        "workflowId": "2lhvnEcERSUEnGghw7zBc",
+        "projectId": "VCOZCujOBOB72ngP",
+        "project": {
+          "updatedAt": "2026-01-30T16:38:37.039Z",
+          "createdAt": "2026-01-30T16:36:00.695Z",
+          "id": "VCOZCujOBOB72ngP",
+          "name": "Andre Santos <kronstor10@gmail.com>",
+          "type": "personal",
+          "icon": null,
+          "description": null,
+          "creatorId": "4e322802-0dbb-4561-96dc-cd99856363e7",
+          "projectRelations": [
+            {
+              "updatedAt": "2026-01-30T16:36:00.695Z",
+              "createdAt": "2026-01-30T16:36:00.695Z",
+              "userId": "4e322802-0dbb-4561-96dc-cd99856363e7",
+              "projectId": "VCOZCujOBOB72ngP",
+              "user": {
+                "updatedAt": "2026-02-01T23:00:02.000Z",
+                "createdAt": "2026-01-30T16:36:00.396Z",
+                "id": "4e322802-0dbb-4561-96dc-cd99856363e7",
+                "email": "kronstor10@gmail.com",
+                "firstName": "Andre",
+                "lastName": "Santos",
+                "personalizationAnswers": {
+                  "version": "v4",
+                  "personalization_survey_submitted_at": "2026-01-30T16:38:43.813Z",
+                  "personalization_survey_n8n_version": "2.4.8"
+                },
+                "settings": {
+                  "userActivated": true,
+                  "firstSuccessfulWorkflowId": "A1YRG7GqFs7uSJ8aoVTpN",
+                  "userActivatedAt": 1769796979686,
+                  "easyAIWorkflowOnboarded": true
+                },
+                "disabled": false,
+                "mfaEnabled": false,
+                "lastActiveAt": "2026-02-01",
+                "isPending": false
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "tags": [],
+    "activeVersion": {
+      "updatedAt": "2026-01-31T18:36:09.000Z",
+      "createdAt": "2026-01-31T18:36:06.703Z",
+      "versionId": "dd02bd3c-f981-4a3c-9c98-1355a99a6dd3",
+      "workflowId": "2lhvnEcERSUEnGghw7zBc",
+      "nodes": [
+        {
+          "parameters": {
+            "inputSource": "passthrough"
+          },
+          "id": "51fa4f39-711c-4a72-bd0f-0403220d2814",
+          "typeVersion": 1.1,
+          "name": "When Executed by Another Workflow",
+          "type": "n8n-nodes-base.executeWorkflowTrigger",
+          "position": [
+            0,
+            0
+          ]
+        },
+        {
+          "parameters": {
+            "model": {
+              "__rl": true,
+              "value": "gpt-4.1-mini",
+              "mode": "list",
+              "cachedResultName": "gpt-4.1-mini"
+            },
+            "options": {}
+          },
+          "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+          "typeVersion": 1.2,
+          "position": [
+            192,
+            208
+          ],
+          "id": "51967502-05af-45b9-ae56-1cfe5c40b96a",
+          "name": "4.1-mini",
+          "credentials": {
+            "openAiApi": {
+              "id": "9rwbTuCPrjOsdMzG",
+              "name": "OpenAi account"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "method": "POST",
+            "url": "https://graph.instagram.com/v24.0/17841451224855274/messages",
+            "sendHeaders": true,
+            "headerParameters": {
+              "parameters": [
+                {
+                  "name": "Authorization",
+                  "value": "Bearer IGAAQbVC020WRBZAFpJTXdSb2VOa1JFQVJRYTdPdG4wNUxDc0dNNWJJM0phWkpsT3Fzam0wdFdGMTBYV0FLM3pxaXQtaTNrRE05Snk0WjFPdVAxeGl4QzYwYmtvb2hMNVdTZA1hRcnNrbWp3ZA3FEX2JkVXlHZAXQ1Q2JxUlk2Y2xYQQZDZD"
+                }
+              ]
+            },
+            "sendBody": true,
+            "bodyParameters": {
+              "parameters": [
+                {
+                  "name": "recipient.id",
+                  "value": "={{ $('When Executed by Another Workflow').item.json.sender.id }}"
+                },
+                {
+                  "name": "message.text",
+                  "value": "={{ $json.output }}"
+                }
+              ]
+            },
+            "options": {}
+          },
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.3,
+          "position": [
+            592,
+            0
+          ],
+          "id": "5f9e8ee7-ab7b-49f7-8fbd-b85d9753762b",
+          "name": "Resposta Instagram"
+        },
+        {
+          "parameters": {
+            "promptType": "define",
+            "text": "={{ $json.message.text }}",
+            "options": {
+              "systemMessage": "=## IDENTIDADE\n-   Você é **Larissa**, secretária da FLOPS  **Consultoria e TI**.\n-   Fale sempre como uma pessoa real — nada de dizer que é assistente virtual ou inteligência artificial.\n-   A forma de se comunicar deve ser **natural, humana e próxima**, como se estivesse conversando com o paciente no WhatsApp da clínica.\n\n## SUA FUNÇÃO\n-   Você atende os pacientes **instagram**, podendo receber apenas **mensagens de texto**.\n-   Seu papel é **acolher o paciente com empatia, criar conexão verdadeira e conduzir a conversa de forma leve e natural até o agendamento da avaliação**.\n\n## TOM DE VOZ\n-   Fale como uma pessoa **real**, com naturalidade e empatia genuína.\n-   Transmita **atenção e interesse** em ajudar o paciente a entender o melhor caminho para o cuidado que ele busca.\n-   Use uma **linguagem simples e mais informal**, mas sempre correta gramaticalmente.\n    -   Evite termos muito formais como “prezado”, “gentileza” ou “por favor”. Prefira formas mais naturais como:\n        -   “pode me mandar”\n        -   “me conta melhor”\n        -   “te explico certinho”\n        -   “vamos ver o que fica melhor pra você”    \n-   **Nunca repita o nome do paciente durante a conversa.** Após coletar o nome, trate a pessoa de forma próxima e acolhedora, mas sem repetir o nome.\n-   Sempre responda com mensagens curtas com no máximo 40 palavras.\n-    Use frases curtas e objetivas.\n-   **Demonstre empatia real** — sempre mostre que você entendeu o que a pessoa disse antes de responder.\n\n## FLUXO DE ATENDIMENTO\n**Etapa 1 — Apresentação e acolhimento**\n-   Inicie se apresentando como Larissa, secretária da FLOPS Data Solutions e peça o nome da pessoa.\n\n**Etapa 2 — Interesse do paciente**\n-   Pergunte de forma acolhedora e empática **quais as dúvidas do cliente**.\n\n- Se o cliente já tiver dito, pule direto para o **fluxo de procedimento e serviços**.\n\n## TOOLS DISPONÍVEIS\n\n### Create a lead in Salesforce\n- use esse tool para criar a lead do cliente.\n\n## DATA E HORA ATUALIZADOS\n\nPara efeito de contexto durante as suas conversas segue a data e hora de hoje e os próximos dias:  \n{{ $now }}"
+            }
+          },
+          "type": "@n8n/n8n-nodes-langchain.agent",
+          "typeVersion": 1.8,
+          "position": [
+            224,
+            0
+          ],
+          "id": "e14db635-32b7-4174-a8c3-c77b64f748ef",
+          "name": "Larissa"
+        },
+        {
+          "parameters": {
+            "sessionIdType": "customKey",
+            "sessionKey": "={{ $('When Executed by Another Workflow').item.json.sender.id }}",
+            "contextWindowLength": "=5"
+          },
+          "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+          "typeVersion": 1.3,
+          "position": [
+            320,
+            208
+          ],
+          "id": "595270a8-760e-4726-8486-6222304cf726",
+          "name": "Simple Memory"
+        },
+        {
+          "parameters": {
+            "descriptionType": "manual",
+            "toolDescription": "Use esse tool uando o cliente informar o nome, entaõ cire um lead para ele",
+            "company": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Company', ``, 'string') }}",
+            "lastname": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Last_Name', ``, 'string') }}",
+            "additionalFields": {}
+          },
+          "type": "n8n-nodes-base.salesforceTool",
+          "typeVersion": 1,
+          "position": [
+            480,
+            176
+          ],
+          "id": "8746a142-c079-46e2-8902-b9138b34940b",
+          "name": "Create a lead in Salesforce",
+          "credentials": {
+            "salesforceOAuth2Api": {
+              "id": "v6waAG1gy6GBaPan",
+              "name": "Salesforce account"
+            }
+          }
+        }
+      ],
+      "connections": {
+        "When Executed by Another Workflow": {
+          "main": [
+            [
+              {
+                "node": "Larissa",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "4.1-mini": {
+          "ai_languageModel": [
+            [
+              {
+                "node": "Larissa",
+                "type": "ai_languageModel",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Larissa": {
+          "main": [
+            [
+              {
+                "node": "Resposta Instagram",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Simple Memory": {
+          "ai_memory": [
+            [
+              {
+                "node": "Larissa",
+                "type": "ai_memory",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Create a lead in Salesforce": {
+          "ai_tool": [
+            [
+              {
+                "node": "Larissa",
+                "type": "ai_tool",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      },
+      "authors": "Andre Santos",
+      "name": "Version dd02bd3c",
+      "description": "",
+      "autosaved": true,
+      "workflowPublishHistory": [
+        {
+          "createdAt": "2026-01-31T18:36:09.972Z",
+          "id": 45,
+          "workflowId": "2lhvnEcERSUEnGghw7zBc",
+          "versionId": "dd02bd3c-f981-4a3c-9c98-1355a99a6dd3",
+          "event": "activated",
+          "userId": "4e322802-0dbb-4561-96dc-cd99856363e7"
+        }
+      ]
+    }
+  }
+]
