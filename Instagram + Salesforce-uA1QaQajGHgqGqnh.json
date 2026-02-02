@@ -1,0 +1,501 @@
+[
+  {
+    "updatedAt": "2026-01-31T18:40:56.904Z",
+    "createdAt": "2026-01-31T14:10:27.315Z",
+    "id": "uA1QaQajGHgqGqnh",
+    "name": "Instagram + Salesforce",
+    "description": null,
+    "active": true,
+    "isArchived": false,
+    "nodes": [
+      {
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "id": "4d3ac7c4-c168-4f9b-9562-f73c9b789337",
+        "typeVersion": 1.1,
+        "name": "When Executed by Another Workflow",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "position": [
+          -256,
+          16
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "955fc861-f831-424a-b4eb-520074425062",
+                "name": "channel",
+                "value": "={{ $('When Executed by Another Workflow').item.json.channel }}",
+                "type": "string"
+              },
+              {
+                "id": "70b2dbea-3576-4074-9134-90d8bb2380f4",
+                "name": "sender.id",
+                "value": "={{ $('When Executed by Another Workflow').item.json.sender.id }}",
+                "type": "string"
+              },
+              {
+                "id": "b753ba40-dd6e-4299-a49d-8842cf449e51",
+                "name": "message.text",
+                "value": "={{ $('When Executed by Another Workflow').item.json.message.text }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          432,
+          0
+        ],
+        "id": "6d9ad776-0785-4bf5-98f8-6fa7c35ef4d7",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "2lhvnEcERSUEnGghw7zBc",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/2lhvnEcERSUEnGghw7zBc",
+            "cachedResultName": "AI Agent"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "position": [
+          608,
+          0
+        ],
+        "id": "1dda0395-44d8-44ee-b069-50b58e8f8a20",
+        "name": "Call 'AI Agent'"
+      },
+      {
+        "parameters": {
+          "resource": "search",
+          "query": "=SELECT Name,id FROM Lead WHERE Instagram_ID__c={{ $json.sender.id }}.0"
+        },
+        "type": "n8n-nodes-base.salesforce",
+        "typeVersion": 1,
+        "position": [
+          224,
+          0
+        ],
+        "id": "531c14ba-2e3e-487d-beca-0ae3d9136d56",
+        "name": "Perform a query",
+        "alwaysOutputData": true,
+        "credentials": {
+          "salesforceOAuth2Api": {
+            "id": "v6waAG1gy6GBaPan",
+            "name": "Salesforce account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "4edde6b5-235f-461f-aac4-c787c84d159c",
+                "leftValue": "={{ $json.sender.id }}",
+                "rightValue": "17841451224855274",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEquals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -48,
+          16
+        ],
+        "id": "f9913996-3c62-4a7c-80ae-792dd9f1d63c",
+        "name": "If"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          128,
+          144
+        ],
+        "id": "adf2539c-1429-4fd5-ba5c-4d32508dde38",
+        "name": "No Operation, do nothing"
+      }
+    ],
+    "connections": {
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Call 'AI Agent'",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Perform a query": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Perform a query",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1",
+      "availableInMCP": false
+    },
+    "staticData": null,
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "pinData": {
+      "When Executed by Another Workflow": [
+        {
+          "json": {
+            "channel": "instagram",
+            "sender": {
+              "id": "6997264400365531"
+            },
+            "message": {
+              "text": "OI"
+            }
+          }
+        }
+      ]
+    },
+    "versionId": "c427ae3d-3c5c-4681-9eff-1b0c3c116b85",
+    "activeVersionId": "c427ae3d-3c5c-4681-9eff-1b0c3c116b85",
+    "versionCounter": 248,
+    "triggerCount": 0,
+    "shared": [
+      {
+        "updatedAt": "2026-01-31T14:10:27.316Z",
+        "createdAt": "2026-01-31T14:10:27.316Z",
+        "role": "workflow:owner",
+        "workflowId": "uA1QaQajGHgqGqnh",
+        "projectId": "VCOZCujOBOB72ngP",
+        "project": {
+          "updatedAt": "2026-01-30T16:38:37.039Z",
+          "createdAt": "2026-01-30T16:36:00.695Z",
+          "id": "VCOZCujOBOB72ngP",
+          "name": "Andre Santos <kronstor10@gmail.com>",
+          "type": "personal",
+          "icon": null,
+          "description": null,
+          "creatorId": "4e322802-0dbb-4561-96dc-cd99856363e7",
+          "projectRelations": [
+            {
+              "updatedAt": "2026-01-30T16:36:00.695Z",
+              "createdAt": "2026-01-30T16:36:00.695Z",
+              "userId": "4e322802-0dbb-4561-96dc-cd99856363e7",
+              "projectId": "VCOZCujOBOB72ngP",
+              "user": {
+                "updatedAt": "2026-02-01T23:00:02.000Z",
+                "createdAt": "2026-01-30T16:36:00.396Z",
+                "id": "4e322802-0dbb-4561-96dc-cd99856363e7",
+                "email": "kronstor10@gmail.com",
+                "firstName": "Andre",
+                "lastName": "Santos",
+                "personalizationAnswers": {
+                  "version": "v4",
+                  "personalization_survey_submitted_at": "2026-01-30T16:38:43.813Z",
+                  "personalization_survey_n8n_version": "2.4.8"
+                },
+                "settings": {
+                  "userActivated": true,
+                  "firstSuccessfulWorkflowId": "A1YRG7GqFs7uSJ8aoVTpN",
+                  "userActivatedAt": 1769796979686,
+                  "easyAIWorkflowOnboarded": true
+                },
+                "disabled": false,
+                "mfaEnabled": false,
+                "lastActiveAt": "2026-02-01",
+                "isPending": false
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "tags": [],
+    "activeVersion": {
+      "updatedAt": "2026-01-31T18:40:59.000Z",
+      "createdAt": "2026-01-31T18:40:56.905Z",
+      "versionId": "c427ae3d-3c5c-4681-9eff-1b0c3c116b85",
+      "workflowId": "uA1QaQajGHgqGqnh",
+      "nodes": [
+        {
+          "parameters": {
+            "inputSource": "passthrough"
+          },
+          "id": "4d3ac7c4-c168-4f9b-9562-f73c9b789337",
+          "typeVersion": 1.1,
+          "name": "When Executed by Another Workflow",
+          "type": "n8n-nodes-base.executeWorkflowTrigger",
+          "position": [
+            -256,
+            16
+          ]
+        },
+        {
+          "parameters": {
+            "assignments": {
+              "assignments": [
+                {
+                  "id": "955fc861-f831-424a-b4eb-520074425062",
+                  "name": "channel",
+                  "value": "={{ $('When Executed by Another Workflow').item.json.channel }}",
+                  "type": "string"
+                },
+                {
+                  "id": "70b2dbea-3576-4074-9134-90d8bb2380f4",
+                  "name": "sender.id",
+                  "value": "={{ $('When Executed by Another Workflow').item.json.sender.id }}",
+                  "type": "string"
+                },
+                {
+                  "id": "b753ba40-dd6e-4299-a49d-8842cf449e51",
+                  "name": "message.text",
+                  "value": "={{ $('When Executed by Another Workflow').item.json.message.text }}",
+                  "type": "string"
+                }
+              ]
+            },
+            "options": {}
+          },
+          "type": "n8n-nodes-base.set",
+          "typeVersion": 3.4,
+          "position": [
+            432,
+            0
+          ],
+          "id": "6d9ad776-0785-4bf5-98f8-6fa7c35ef4d7",
+          "name": "Edit Fields"
+        },
+        {
+          "parameters": {
+            "workflowId": {
+              "__rl": true,
+              "value": "2lhvnEcERSUEnGghw7zBc",
+              "mode": "list",
+              "cachedResultUrl": "/workflow/2lhvnEcERSUEnGghw7zBc",
+              "cachedResultName": "AI Agent"
+            },
+            "workflowInputs": {
+              "mappingMode": "defineBelow",
+              "value": {},
+              "matchingColumns": [],
+              "schema": [],
+              "attemptToConvertTypes": false,
+              "convertFieldsToString": true
+            },
+            "options": {}
+          },
+          "type": "n8n-nodes-base.executeWorkflow",
+          "typeVersion": 1.3,
+          "position": [
+            608,
+            0
+          ],
+          "id": "1dda0395-44d8-44ee-b069-50b58e8f8a20",
+          "name": "Call 'AI Agent'"
+        },
+        {
+          "parameters": {
+            "resource": "search",
+            "query": "=SELECT Name,id FROM Lead WHERE Instagram_ID__c={{ $json.sender.id }}.0"
+          },
+          "type": "n8n-nodes-base.salesforce",
+          "typeVersion": 1,
+          "position": [
+            224,
+            0
+          ],
+          "id": "531c14ba-2e3e-487d-beca-0ae3d9136d56",
+          "name": "Perform a query",
+          "alwaysOutputData": true,
+          "credentials": {
+            "salesforceOAuth2Api": {
+              "id": "v6waAG1gy6GBaPan",
+              "name": "Salesforce account"
+            }
+          }
+        },
+        {
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "strict",
+                "version": 3
+              },
+              "conditions": [
+                {
+                  "id": "4edde6b5-235f-461f-aac4-c787c84d159c",
+                  "leftValue": "={{ $json.sender.id }}",
+                  "rightValue": "17841451224855274",
+                  "operator": {
+                    "type": "string",
+                    "operation": "notEquals"
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "options": {}
+          },
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.3,
+          "position": [
+            -48,
+            16
+          ],
+          "id": "f9913996-3c62-4a7c-80ae-792dd9f1d63c",
+          "name": "If"
+        },
+        {
+          "parameters": {},
+          "type": "n8n-nodes-base.noOp",
+          "typeVersion": 1,
+          "position": [
+            128,
+            144
+          ],
+          "id": "adf2539c-1429-4fd5-ba5c-4d32508dde38",
+          "name": "No Operation, do nothing"
+        }
+      ],
+      "connections": {
+        "When Executed by Another Workflow": {
+          "main": [
+            [
+              {
+                "node": "If",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Edit Fields": {
+          "main": [
+            [
+              {
+                "node": "Call 'AI Agent'",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Perform a query": {
+          "main": [
+            [
+              {
+                "node": "Edit Fields",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "If": {
+          "main": [
+            [
+              {
+                "node": "Perform a query",
+                "type": "main",
+                "index": 0
+              }
+            ],
+            [
+              {
+                "node": "No Operation, do nothing",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      },
+      "authors": "Andre Santos",
+      "name": "Version c427ae3d",
+      "description": "",
+      "autosaved": true,
+      "workflowPublishHistory": [
+        {
+          "createdAt": "2026-01-31T18:40:59.413Z",
+          "id": 48,
+          "workflowId": "uA1QaQajGHgqGqnh",
+          "versionId": "c427ae3d-3c5c-4681-9eff-1b0c3c116b85",
+          "event": "activated",
+          "userId": "4e322802-0dbb-4561-96dc-cd99856363e7"
+        }
+      ]
+    }
+  }
+]
